@@ -9,9 +9,9 @@ pragma solidity >=0.7.0 <0.9.0;
  */
 contract Choose {
     uint256 init = 0;
-    uint256 neutrality = 0; //中立
-    uint256 open = 0; //开放
-    uint256 dynamicZeroing = 0; //动态清零
+    uint256 public neutrality = 0; //中立
+    uint256 public open = 0; //开放
+    uint256 public dynamicZeroing = 0; //动态清零
     mapping(address => address[]) people; //只能邀请六人投票
     mapping(address => uint256) votingCheck; //每人只能投一票,将投票结果放入
     address owner; // 定义owner变量
@@ -71,41 +71,17 @@ contract Choose {
         votingCheck[msg.sender] = choose;
 
         if (choose == 1) {
-            dynamicZeroing += 1; //0 动态清零
+            dynamicZeroing = dynamicZeroing + 1; //0 动态清零
             return dynamicZeroing;
         } else if (choose == 2) {
-            open += 1; //开放
+            open = open + 1; //开放
             return open;
         } else if (choose == 3) {
-            neutrality += 1; //中立
+            neutrality = neutrality + 1; //中立
             return neutrality;
         }
 
         return 0;
-    }
-
-    /**
-     * @dev 返回中立用户投票数
-     * @return value of 'number'
-     */
-    function retNeutrality() public view returns (uint256) {
-        return neutrality;
-    }
-
-    /**
-     * @dev 返回开放用户投票数
-     * @return value of 'number'
-     */
-    function retOpen() public view returns (uint256) {
-        return open;
-    }
-
-    /**
-     * @dev 返回封锁用户投票数
-     * @return value of 'number'
-     */
-    function retDynamicZeroing() public view returns (uint256) {
-        return neutrality;
     }
 
     /**
