@@ -1,0 +1,331 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>防疫政策意向投票-基于以太坊</title>
+    <link rel="icon" type="image/svg" href="https://metamask.github.io/test-dapp/metamask-fox.svg" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://metamask.github.io/test-dapp/index.css" type="text/css" />
+</head>
+
+<body>
+    <main class="container-fluid">
+        <header>
+            <div id="logo-container">
+                <h1 id="logo-text" class="text-center">
+                    防疫政策意向投票-基于区块链-以太坊Goerli 测试网络
+                </h1>
+            </div>
+        </header>
+        <section>
+            <div id="warning" class="row justify-content-center error-div">
+                <div class="error-message justify-content-center col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+                    <img src="alert-red.svg" alt="" class="error-message-icon
+              " />
+                    <div class="error-message-text">请使用以太坊Goerli 测试网络.仅支持Microsoft Edge浏览器</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+                    <p class="info-text alert alert-primary">
+                        中立: <span id="neutrality">链接钱包获取</span>
+                    </p>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+                    <p class="info-text alert alert-secondary">
+                        开放: <span id="open">链接钱包获取</span>
+                    </p>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12">
+                    <p class="info-text alert alert-success">
+                        动态清零: <span id="dynamicZeroing">链接钱包获取</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
+                    <div class="card full-width">
+                        <div class="card-body">
+                            <button class="btn btn-primary btn-lg btn-block mb-3" id="Connect">
+                                链接MetaMask
+                            </button>
+                            <p class="info-text alert alert-success">
+                                你的地址: <span id="clientAccounts">未链接账户</span>
+                            </p>
+                            <hr />
+                            <div class="form-group">
+                                <label>邀请你的账户地址</label>
+                                <input class="form-control" type="text" id="higher" value="" placeholder="0x......" />
+                            </div>
+                            <button class="btn btn-primary btn-lg btn-block mb-3" id="bind">
+                                绑定
+                            </button>
+                            <p class="info-text alert alert-success">
+                                邀请你的账户地址: <span id="higherText"></span>
+                            </p>
+                            <div class="form-group">
+                                <label>好友的地址</label>
+                                <input class="form-control" type="text" id="inviteAdr" placeholder="0x......" />
+                            </div>
+                            <button class="btn btn-primary btn-lg btn-block mb-3" id="invite">
+                                邀请好友投票
+                            </button>
+                            <div id="peopleAddr">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
+                    <div class="card full-width">
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                投票
+                            </h4>
+                            <p class="info-text alert alert-success">
+                                你的投票结果: <span id="tokenAddress">中立</span>
+                            </p>
+                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3" id="createToken">
+                                中立
+                            </button>
+                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3" id="watchAsset">
+                                开放
+                            </button>
+                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3" id="transferTokens">
+                                动态清零
+                            </button>
+                            <hr />
+                            <div class="form-group">
+                                <label>查询对应地址投票结果</label>
+                                <input class="form-control" type="text" id="mintAmountInput" value="0x83872CE33905776EF9e159b892AC0Ad568bA388F" />
+                            </div>
+                            <button class="btn btn-primary btn-lg btn-block mb-3" id="sendFailingButton">
+                                查询
+                            </button>
+                            <p class="info-text alert alert-success">
+                                地址对应投票结果: <span id="contractStatus">动态清零</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 col-12 d-flex align-items-stretch">
+                    <div class="card full-width">
+                        <div class="card-body">
+                            <h4 class="card-title">
+                                投票说明
+                            </h4>
+                            <div class="form-group">
+                                <label style="color: red">
+                                    首先我们需要寻求一个共识，中立，动态清零，开放，并将这些人联系起来<br />
+                                    中立：是否有更好的方法<br />
+                                    开放：是否接受开放的代价,谁来负责,如何开放,谁来执行<br />
+                                    动态清零：是否接受动态清零的代价,谁来负责,如何动态清零,谁来执行</label>
+                            </div>
+                            <h4 class="card-title">
+                                规则说明
+                            </h4>
+                            <div class="form-group">
+                                <label>
+                                    由合约创建人初始化,基于六度关系理论,每位被邀请人可邀请六人投票<br />
+                                    每人可投一票<br />
+                                    请邀请你信任的人投票,这将影响你对投票结果的信任<br />
+                                    程序问题请联系66ccff@historyblock.org<br />
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton" onclick="window.location.href='https://gist.github.com/mandarenmanman/ca98f0c30b9c05657fa86b25c2c2a6d8#file-contracts-choose-sol'">
+                                    合约开源地址
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton">
+                                    投票教程
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton">
+                                    以太坊Goerli 测试网络水龙头
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton">
+                                    MetaMask账户注册说明
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script>
+    var chooseAbi = [
+        //邀请
+        "function invite(address invited, address higher) public returns (uint256)",
+
+        //投票
+        "function voting(uint256 choose, address higher) public returns (uint256)",
+
+        //获取地址对应投票结果
+        "function getVoting(address adr) public view returns (uint256)",
+
+        //获取邀请的地址
+        "function getPeople(address adr) public view returns (address[] memory _array)",
+
+        //获取当前账户是否在邀请名单中
+        "function whitelistCheck(address higher) public returns (bool)",
+
+        //获取中立投票数
+        "function neutrality() public view returns (uint256)",
+
+        //获取开放投票数
+        "function open() public view returns (uint256)",
+
+        //获取动态清零投票数
+        "function dynamicZeroing() public view returns (uint256)",
+
+        //白名单查询事件
+        "event whitelistCheckEvent(address indexed higher,address indexed owner,bool wCheck)",
+    ];
+
+    var ethClient;
+    var clientAccounts;
+    var chooseContractClient;
+    var chooseAddress = "0x05152732FbF78d468BC550f7a9C63054B78F08e4";
+    var signerClient;
+
+
+    //邀请好友
+    $("#invite").click(
+        function() {
+            invite();
+        })
+    async function invite() {
+
+
+        contract = new ethers.Contract(chooseAddress, chooseAbi, signerClient)
+
+        let higherText = $("#higherText").html();
+
+
+        if (higherText.length != 42) {
+            higherText = "0x83872ce33905776ef9e159b892ac0ad568ba388f";
+        }
+
+        console.log("higherText:" + higherText);
+        const inviteAdr = $("#inviteAdr").val();
+        console.log("inviteAdr:" + inviteAdr);
+
+        //邀请好友投票
+        tx = await contract.invite(inviteAdr, higherText)
+
+        const getPeople = await chooseContractClient.getPeople(clientAccounts[0]);
+        console.log("getPeople:" + getPeople.length);
+        var peopleText = "<label>邀请的好友地址</label>";
+        for (i = 0; i < getPeople.length; i++) {
+            peopleText += '<p class="info-text alert alert-success">  好友地址' + (i + 1) + ': <span>' + getPeople[i] + '</span>  </p>';
+        }
+
+        console.log(peopleText);
+        $("#peopleAddr").html(peopleText);
+
+
+    }
+
+    //白名单确认
+    $("#bind").click(
+        function() {
+            bind();
+        })
+    async function bind() {
+
+
+        contract = new ethers.Contract(chooseAddress, chooseAbi, signerClient)
+
+
+
+        const higher = $("#higher").val();
+        console.log("higher:" + higher);
+
+
+        tx = await contract.whitelistCheck(higher)
+
+        console.log(tx)
+
+        const owner = $("#clientAccounts").html();
+
+        let filter = contract.filters.whitelistCheckEvent(null, owner)
+        contract.on(filter, (higher, sender, wCheck, event) => {
+            console.log('--- the Ower ----')
+            console.log('higher=', higher)
+            console.log('sender=', sender)
+            console.log('wCheck=', wCheck)
+            if (!wCheck) {
+                $("#higherText").html(event.blockNumber + ":该账户未邀请你,或者联系66ccff@historyblock.org");
+            } else {
+                $("#higherText").html(higher);
+            }
+            console.log('eventNumber=', event.blockNumber)
+        })
+
+
+    }
+
+    //链接账户
+    $("#Connect").click(
+        function() {
+            connect();
+        })
+
+    //链接账户异步方法
+    async function connect() {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+        const signer = provider.getSigner();
+
+        signerClient = signer;
+
+        const chooseContract = new ethers.Contract(chooseAddress, chooseAbi, provider);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        ethClient = provider;
+        chooseContractClient = chooseContract;
+        clientAccounts = accounts;
+        $("#clientAccounts").html(clientAccounts[0]);
+
+        //获取中立投票数
+        const neutrality = await chooseContractClient.neutrality();
+        console.log("neutrality:" + neutrality);
+        $("#neutrality").html(neutrality + "");
+
+        //获取开放投票数
+        const open = await chooseContractClient.open();
+        console.log("open:" + open);
+        $("#open").html(open + "");
+
+        //获取动态清零投票数
+        const dynamicZeroing = await chooseContractClient.dynamicZeroing();
+        console.log("dynamicZeroing:" + dynamicZeroing);
+        $("#dynamicZeroing").html(dynamicZeroing + "");
+
+
+        //查询我邀请的好友
+        const getPeople = await chooseContractClient.getPeople(clientAccounts[0]);
+        console.log("getPeople:" + getPeople.length);
+        var peopleText = "<label>邀请的好友地址</label>";
+        for (i = 0; i < getPeople.length; i++) {
+            peopleText += '<p class="info-text alert alert-success">  好友地址' + (i + 1) + ': <span>' + getPeople[i] + '</span>  </p>';
+        }
+
+        console.log(peopleText);
+        $("#peopleAddr").html(peopleText);
+    }
+    </script>
+</body>
+
+</html>
