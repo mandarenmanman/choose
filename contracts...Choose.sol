@@ -17,6 +17,12 @@ contract Choose {
     address owner; // 定义owner变量
     address[] a6;
 
+    event whitelistCheckEvent(
+        address indexed higher,
+        address indexed owner,
+        bool wCheck
+    );
+
     // 构造函数
     constructor() {
         owner = msg.sender; // 在部署合约的时候，将owner设置为部署者的地址
@@ -107,14 +113,17 @@ contract Choose {
     function whitelistCheck(address higher) public returns (bool) {
         a6 = people[higher];
         if (a6.length == 0) {
+            emit whitelistCheckEvent(higher, msg.sender, false);
             return false;
         } else {
             for (uint256 i = 0; i < a6.length; i++) {
                 //被邀请过
                 if (a6[i] == msg.sender) {
+                    emit whitelistCheckEvent(higher, msg.sender, true);
                     return true;
                 }
             }
+            emit whitelistCheckEvent(higher, msg.sender, false);
             return false;
         }
     }
