@@ -1,0 +1,214 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "adr",
+						"type": "address"
+					}
+				],
+				"name": "getPeople",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "_array",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "adr",
+						"type": "address"
+					}
+				],
+				"name": "getVoting",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "invited",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "higher",
+						"type": "address"
+					}
+				],
+				"name": "invite",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "retDynamicZeroing",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "retNeutrality",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "retOpen",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "choose",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "higher",
+						"type": "address"
+					}
+				],
+				"name": "voting",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "historyblock.org",
+			"details": "防疫措施公投",
+			"kind": "dev",
+			"methods": {
+				"getPeople(address)": {
+					"details": "返回对应账户邀请人"
+				},
+				"getVoting(address)": {
+					"details": "返回账户对应投票结果",
+					"returns": {
+						"_0": "value of 'number'"
+					}
+				},
+				"retDynamicZeroing()": {
+					"details": "返回封锁用户投票数",
+					"returns": {
+						"_0": "value of 'number'"
+					}
+				},
+				"retNeutrality()": {
+					"details": "返回中立用户投票数",
+					"returns": {
+						"_0": "value of 'number'"
+					}
+				},
+				"retOpen()": {
+					"details": "返回开放用户投票数",
+					"returns": {
+						"_0": "value of 'number'"
+					}
+				}
+			},
+			"title": "选择",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"invite(address,address)": {
+					"notice": "邀请用户投票，由合约账户建立起点后，被邀请账户可继续邀请6人"
+				},
+				"voting(uint256,address)": {
+					"notice": "投票函数"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Choose.sol": "Choose"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Choose.sol": {
+			"keccak256": "0xdcf4bb3be327f418033323bb0510bc62bc1eeff4fb53e5732d3f413b258e6ecf",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://7a4fe3e8b23a10c410f1f4730dc89b684ac246e642b7c70aaf4901f8cbaf947d",
+				"dweb:/ipfs/QmcSBYsf7eQ1Cpo4UJvfi9nmhFYAcUWiVLdZSTJyTBJv8L"
+			]
+		}
+	},
+	"version": 1
+}
