@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 /**
  * @title 选择
- * @dev 防疫措施公投
+ * @dev 防疫措施公投,基于六度关系理论
  * @author historyblock.org
  */
 contract Choose {
@@ -104,7 +104,7 @@ contract Choose {
     }
 
     //邀请检查
-    function whitelistCheck(address higher) private returns (bool) {
+    function whitelistCheck(address higher) public returns (bool) {
         a6 = people[higher];
         if (a6.length == 0) {
             return false;
