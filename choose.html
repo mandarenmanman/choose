@@ -88,13 +88,13 @@
                             <p class="info-text alert alert-success">
                                 你的投票结果: <span id="getMyVotingMsg"></span>
                             </p>
-                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3" id="createToken">
+                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3 _choose" data-choose="3">
                                 中立
                             </button>
-                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3" id="watchAsset">
+                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3 _choose" data-choose="2">
                                 开放
                             </button>
-                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3" id="transferTokens">
+                            <button class="btn btn-outline-secondary btn-lg btn-block mb-3 _choose" data-choose="1">
                                 动态清零
                             </button>
                             <hr />
@@ -201,15 +201,80 @@
     var ethClient;
     var clientAccounts;
     var chooseContractClient;
-    const chooseAddress = "0x3f5f3b0b6EDAe8BA83Bc213592a28d39e87627Fc"; //合约地址
+    const chooseAddress = "0x03C2B6478F4B736285A16c5e9447D80379Bcf88b"; //合约地址
     var signerClient;
-    const ownerAddress = "0x03f6d483424b0e21d584b6526ac15bd3b396b2d1"; //合约部署账户
+    const ownerAddress = "0x83872CE33905776EF9e159b892AC0Ad568bA388F"; //合约部署账户
 
 
-    //邀请好友
+    //投票
+    $("._choose").click(
+        function() {
+            if (!isConnect()) {
+                return;
+            }
+            choose(this);
+        })
+    async function choose(that) {
+
+
+        const chooseV = that.getAttribute("data-choose");
+        console.log("chooseV:" + chooseV); //122
+
+        contract = new ethers.Contract(chooseAddress, chooseAbi, signerClient)
+
+        let higherText = $("#higherText").html();
+
+        const owner = $("#clientAccounts").html();
+
+        console.log("owner:" + owner);
+        console.log("ownerAddress:" + ownerAddress);
+
+        if (owner.toUpperCase() != ownerAddress.toUpperCase()) {
+            if (higherText.length != 42) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: '请先绑定邀请你的账户地址!',
+                })
+                return;
+            }
+        } else {
+            higherText = ownerAddress;
+        }
+
+
+        const getMyVotingMsg = $("#getMyVotingMsg").html();
+        if (getMyVotingMsg == "" || getMyVotingMsg == "未投票") {
+
+            tx = await contract.voting(chooseV, higherText)
+            Swal.fire(
+                '投票成功',
+                '你的投票是：' + getVinfo(chooseV) + '!',
+                'success'
+            )
+
+
+        } else {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '每人只能投票一次!',
+            })
+
+
+        }
+
+
+
+    }
+
+    //查询投票结果
     $("#getVotingId").click(
         function() {
-
+            if (!isConnect()) {
+                return;
+            }
             getVoting();
         })
     async function getVoting() {
@@ -226,7 +291,7 @@
             return;
         }
 
-        getV(clientAccounts[0], "#getVotingMsg");
+        getV(getVotingAddr, "#getVotingMsg");
 
     }
 
@@ -234,7 +299,9 @@
     //邀请好友
     $("#invite").click(
         function() {
-
+            if (!isConnect()) {
+                return;
+            }
             invite();
         })
     async function invite() {
@@ -245,7 +312,11 @@
         let higherText = $("#higherText").html();
 
         const owner = $("#clientAccounts").html();
-        if (owner != ownerAddress) {
+
+        console.log("owner:" + owner);
+        console.log("ownerAddress:" + ownerAddress);
+
+        if (owner.toUpperCase() != ownerAddress.toUpperCase()) {
             if (higherText.length != 42) {
                 Swal.fire({
                     icon: 'error',
@@ -284,6 +355,8 @@
             console.log('sender=', sender)
 
 
+            console.log(event);
+
             const tag = ethers.BigNumber.from(calltag).toNumber();
             console.log('calltag=', tag)
 
@@ -321,6 +394,9 @@
     //白名单确认
     $("#bind").click(
         function() {
+            if (!isConnect()) {
+                return;
+            }
             bind();
         })
     async function bind() {
@@ -353,19 +429,24 @@
             console.log('higher=', higher)
             console.log('sender=', sender)
             console.log('wCheck=', wCheck)
-            if (!wCheck) {
-                $("#higherText").html(":该账户未邀请你,或者联系66ccff@historyblock.org,事件ID:" + event.blockNumber);
-            } else {
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: '绑定账户成功',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-                $("#higherText").html(higher);
+
+            if ($("#higherText").html() != higher) {
+                if (!wCheck) {
+                    $("#higherText").html(":该账户未邀请你,或者联系66ccff@historyblock.org,事件ID:" + event.blockNumber);
+                } else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: '绑定账户成功',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    $("#higherText").html(higher);
+                }
+                console.log('eventNumber=', event.blockNumber)
             }
-            console.log('eventNumber=', event.blockNumber)
+
+
         })
 
 
@@ -392,9 +473,47 @@
         clientAccounts = accounts;
         $("#clientAccounts").html(clientAccounts[0]);
 
-        getV(clientAccounts[0], "#getMyVotingMsg");
+
+
+
+        //每疫苗刷新一次投票结果
+        //setIntervalRun();
         getAllVoting();
+        getV(clientAccounts[0], "#getMyVotingMsg");
         getPeopleAsync();
+
+    }
+    async function sleep(ms = 5000) {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms);
+        });
+    }
+    async function setIntervalRun() {
+        while (true) {
+            await sleep();
+            await getAllVoting();
+        }
+    }
+
+
+
+
+    //判断当前账户是否链接
+    function isConnect() {
+        const owner = $("#clientAccounts").html();
+
+        console.log("owner:" + owner);
+
+        if (owner.length != 42) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '请链接MetaMask!',
+            })
+            return false;
+        }
+
+        return true;
 
     }
 
@@ -416,15 +535,39 @@
         */
         const voting = await chooseContractClient.getVoting(getVotingAddr);
         console.log("voting:" + voting);
-        if (voting == 3) {
-            $(msgId).html("中立");
-        } else if (voting == 1) {
-            $(msgId).html("动态清零");
-        } else if (voting == 2) {
-            $(msgId).html("开放");
-        } else {
-            $(msgId).html("未投票");
+
+        $(msgId).html(getVinfo(voting));
+    }
+
+
+    //投票结果转换,前端页面可能被篡改,安全的方式应该是查看合约查询对应的值
+    function getVinfo(voting) {
+
+        /**
+
+        if (choose == 1) {
+            dynamicZeroing = dynamicZeroing + 1; //0 动态清零
+            return dynamicZeroing;
+        } else if (choose == 2) {
+            open = open + 1; //开放
+            return open;
+        } else if (choose == 3) {
+            neutrality = neutrality + 1; //中立
+            return neutrality;
         }
+
+        */
+
+        if (voting == 3) {
+            return "中立";
+        } else if (voting == 1) {
+            return "动态清零";
+        } else if (voting == 2) {
+            return "开放";
+        } else {
+            return "未投票";
+        }
+
     }
 
     //查询全部投票信息
