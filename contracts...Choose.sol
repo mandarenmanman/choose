@@ -43,9 +43,11 @@ contract Choose {
             a6.push(invited);
             people[msg.sender] = a6;
             init = 1;
+            emit inviteEvent(msg.sender, higher, 1);
             return a6.length;
         } else {
             if (whitelistCheck(higher) == false) {
+                emit inviteEvent(msg.sender, higher, 2);
                 revert("Please contact 66ccff@historyblock.org");
             } else {
                 a6 = people[msg.sender];
@@ -53,10 +55,11 @@ contract Choose {
                 //邀请的人不能超过6个
                 if (a6.length <= 6) {
                     people[msg.sender] = a6;
+                    emit inviteEvent(msg.sender, higher, 3);
                     return a6.length;
                 }
             }
-
+            emit inviteEvent(msg.sender, higher, 3);
             revert("The number of invitations has exceeded 6 people");
         }
     }
