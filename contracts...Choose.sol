@@ -18,9 +18,15 @@ contract Choose {
     address[] a6;
 
     event whitelistCheckEvent(
-        address indexed higher,
-        address indexed owner,
-        bool wCheck
+        address indexed higher, //合约调用人的邀请人
+        address indexed owner, //合约调用人的地址
+        bool wCheck //是否被邀请
+    );
+
+    event inviteEvent(
+        address indexed owner, //合约调用人的地址
+        address indexed higher, //合约调用人的邀请人
+        uint256 calltag //1 邀请用户成功  2 你的邀请人不在白名单中  3 已达到最大邀请人
     );
 
     // 构造函数
