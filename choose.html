@@ -86,7 +86,7 @@
                                 投票
                             </h4>
                             <p class="info-text alert alert-success">
-                                你的投票结果: <span id="tokenAddress">中立</span>
+                                你的投票结果: <span id="getMyVotingMsg"></span>
                             </p>
                             <button class="btn btn-outline-secondary btn-lg btn-block mb-3" id="createToken">
                                 中立
@@ -100,13 +100,13 @@
                             <hr />
                             <div class="form-group">
                                 <label>查询对应地址投票结果</label>
-                                <input class="form-control" type="text" id="mintAmountInput" value="0x83872CE33905776EF9e159b892AC0Ad568bA388F" />
+                                <input class="form-control" type="text" placeholder="0x......" id="getVotingAddr" />
                             </div>
-                            <button class="btn btn-primary btn-lg btn-block mb-3" id="sendFailingButton">
+                            <button class="btn btn-primary btn-lg btn-block mb-3" id="getVotingId">
                                 查询
                             </button>
                             <p class="info-text alert alert-success">
-                                地址对应投票结果: <span id="contractStatus">动态清零</span>
+                                地址对应投票结果: <span id="getVotingMsg"></span>
                             </p>
                         </div>
                     </div>
@@ -164,6 +164,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
     var chooseAbi = [
         //邀请
@@ -192,18 +193,48 @@
 
         //白名单查询事件
         "event whitelistCheckEvent(address indexed higher,address indexed owner,bool wCheck)",
+
+        //邀请结果返回
+        "event inviteEvent(address indexed owner,address indexed higher,uint256 calltag)" //calltag //1 邀请用户成功  2 你的邀请人不在白名单中  3 已达到最大邀请人
     ];
 
     var ethClient;
     var clientAccounts;
     var chooseContractClient;
-    var chooseAddress = "0x05152732FbF78d468BC550f7a9C63054B78F08e4";
+    const chooseAddress = "0x3f5f3b0b6EDAe8BA83Bc213592a28d39e87627Fc"; //合约地址
     var signerClient;
+    const ownerAddress = "0x03f6d483424b0e21d584b6526ac15bd3b396b2d1"; //合约部署账户
+
+
+    //邀请好友
+    $("#getVotingId").click(
+        function() {
+
+            getVoting();
+        })
+    async function getVoting() {
+
+        const getVotingAddr = $("#getVotingAddr").val();
+        console.log("getVotingAddr:" + getVotingAddr);
+
+        if (getVotingAddr.length != 42) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '请先输入你要查询的账户地址!',
+            })
+            return;
+        }
+
+        getV(clientAccounts[0], "#getVotingMsg");
+
+    }
 
 
     //邀请好友
     $("#invite").click(
         function() {
+
             invite();
         })
     async function invite() {
@@ -213,28 +244,77 @@
 
         let higherText = $("#higherText").html();
 
-
-        if (higherText.length != 42) {
-            higherText = "0x83872ce33905776ef9e159b892ac0ad568ba388f";
+        const owner = $("#clientAccounts").html();
+        if (owner != ownerAddress) {
+            if (higherText.length != 42) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: '请绑定邀请你的账户地址!',
+                })
+                return;
+            }
+        } else {
+            higherText = ownerAddress;
         }
+
 
         console.log("higherText:" + higherText);
         const inviteAdr = $("#inviteAdr").val();
         console.log("inviteAdr:" + inviteAdr);
 
+        if (inviteAdr.length != 42) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '请先输入你要邀请的账户地址!',
+            })
+            return;
+        }
+
         //邀请好友投票
         tx = await contract.invite(inviteAdr, higherText)
 
-        const getPeople = await chooseContractClient.getPeople(clientAccounts[0]);
-        console.log("getPeople:" + getPeople.length);
-        var peopleText = "<label>邀请的好友地址</label>";
-        for (i = 0; i < getPeople.length; i++) {
-            peopleText += '<p class="info-text alert alert-success">  好友地址' + (i + 1) + ': <span>' + getPeople[i] + '</span>  </p>';
-        }
 
-        console.log(peopleText);
-        $("#peopleAddr").html(peopleText);
+        //获取事件
+        let filter = contract.filters.inviteEvent(owner, null)
+        contract.on(filter, (sender, higher, calltag, event) => {
+            console.log('--- the Ower ----')
+            console.log('higher=', higher)
+            console.log('sender=', sender)
 
+
+            const tag = ethers.BigNumber.from(calltag).toNumber();
+            console.log('calltag=', tag)
+
+            if (tag == 1) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '邀请账户成功!',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                getPeopleAsync();
+            } else if (tag == 2) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '你的邀请人不在白名单中!',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            } else {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '邀请的用户最多6个!',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
+            console.log('eventNumber=', event.blockNumber)
+        })
 
     }
 
@@ -252,7 +332,14 @@
 
         const higher = $("#higher").val();
         console.log("higher:" + higher);
-
+        if (higher.length != 42) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '请先输入邀请你的账户地址!',
+            })
+            return;
+        }
 
         tx = await contract.whitelistCheck(higher)
 
@@ -267,8 +354,15 @@
             console.log('sender=', sender)
             console.log('wCheck=', wCheck)
             if (!wCheck) {
-                $("#higherText").html(event.blockNumber + ":该账户未邀请你,或者联系66ccff@historyblock.org");
+                $("#higherText").html(":该账户未邀请你,或者联系66ccff@historyblock.org,事件ID:" + event.blockNumber);
             } else {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '绑定账户成功',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
                 $("#higherText").html(higher);
             }
             console.log('eventNumber=', event.blockNumber)
@@ -298,6 +392,43 @@
         clientAccounts = accounts;
         $("#clientAccounts").html(clientAccounts[0]);
 
+        getV(clientAccounts[0], "#getMyVotingMsg");
+        getAllVoting();
+        getPeopleAsync();
+
+    }
+
+    //查询地址对应投票结果
+    async function getV(getVotingAddr, msgId) {
+        /**
+
+        if (choose == 1) {
+            dynamicZeroing = dynamicZeroing + 1; //0 动态清零
+            return dynamicZeroing;
+        } else if (choose == 2) {
+            open = open + 1; //开放
+            return open;
+        } else if (choose == 3) {
+            neutrality = neutrality + 1; //中立
+            return neutrality;
+        }
+
+        */
+        const voting = await chooseContractClient.getVoting(getVotingAddr);
+        console.log("voting:" + voting);
+        if (voting == 3) {
+            $(msgId).html("中立");
+        } else if (voting == 1) {
+            $(msgId).html("动态清零");
+        } else if (voting == 2) {
+            $(msgId).html("开放");
+        } else {
+            $(msgId).html("未投票");
+        }
+    }
+
+    //查询全部投票信息
+    async function getAllVoting() {
         //获取中立投票数
         const neutrality = await chooseContractClient.neutrality();
         console.log("neutrality:" + neutrality);
@@ -312,9 +443,11 @@
         const dynamicZeroing = await chooseContractClient.dynamicZeroing();
         console.log("dynamicZeroing:" + dynamicZeroing);
         $("#dynamicZeroing").html(dynamicZeroing + "");
+    }
 
+    //查询我邀请的好友
+    async function getPeopleAsync() {
 
-        //查询我邀请的好友
         const getPeople = await chooseContractClient.getPeople(clientAccounts[0]);
         console.log("getPeople:" + getPeople.length);
         var peopleText = "<label>邀请的好友地址</label>";
@@ -324,6 +457,7 @@
 
         console.log(peopleText);
         $("#peopleAddr").html(peopleText);
+
     }
     </script>
 </body>

@@ -55,7 +55,7 @@ contract Choose {
                 //邀请的人不能超过6个
                 if (a6.length <= 6) {
                     people[msg.sender] = a6;
-                    emit inviteEvent(msg.sender, higher, 3);
+                    emit inviteEvent(msg.sender, higher, 1);
                     return a6.length;
                 }
             }
