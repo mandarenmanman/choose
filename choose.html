@@ -122,7 +122,9 @@
                                     首先我们需要寻求一个共识，中立，动态清零，开放，并将这些人联系起来<br />
                                     中立：是否有更好的方法<br />
                                     开放：是否接受开放的代价,谁来负责,如何开放,谁来执行<br />
-                                    动态清零：是否接受动态清零的代价,谁来负责,如何动态清零,谁来执行</label>
+                                    动态清零：是否接受动态清零的代价,谁来负责,如何动态清零,谁来执行<br />
+                                    建议大家积极参与监督人大代表选举投票
+                                </label>
                             </div>
                             <h4 class="card-title">
                                 规则说明
@@ -135,22 +137,25 @@
                                     程序问题请联系66ccff@historyblock.org<br />
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton" onclick="window.location.href='https://gist.github.com/mandarenmanman/ca98f0c30b9c05657fa86b25c2c2a6d8#file-contracts-choose-sol'">
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton" onclick="window.open('https://github.com/mandarenmanman/choose')">
                                     合约开源地址
                                 </button>
-                            </div>
-                            <div class="form-group">
-                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton">
-                                    投票教程
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton" onclick="window.open('https://goerli.etherscan.io/address/0xa15d02b6a8178be889dee018575f38e340072a9b')">
+                                    合约部署地址
                                 </button>
                             </div>
                             <div class="form-group">
                                 <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton">
+                                    投票教程(暂无)
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton" onclick="window.open('https://goerlifaucet.com/')">
                                     以太坊Goerli 测试网络水龙头
                                 </button>
                             </div>
                             <div class="form-group">
-                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton">
+                                <button class="btn btn-primary btn-lg btn-block mb-3" id="mintButton" onclick="window.open('https://metamask.io/')">
                                     MetaMask账户注册说明
                                 </button>
                             </div>
@@ -201,7 +206,7 @@
     var ethClient;
     var clientAccounts;
     var chooseContractClient;
-    const chooseAddress = "0x03C2B6478F4B736285A16c5e9447D80379Bcf88b"; //合约地址
+    const chooseAddress = "0xA15D02b6A8178be889DEe018575f38e340072A9B"; //合约地址
     var signerClient;
     const ownerAddress = "0x83872CE33905776EF9e159b892AC0Ad568bA388F"; //合约部署账户
 
@@ -252,7 +257,8 @@
                 '你的投票是：' + getVinfo(chooseV) + '!',
                 'success'
             )
-
+            $("#getMyVotingMsg").html(getVinfo(chooseV))
+            //将投票结果展示出来
 
         } else {
 
@@ -355,6 +361,9 @@
             console.log('sender=', sender)
 
 
+
+
+
             console.log(event);
 
             const tag = ethers.BigNumber.from(calltag).toNumber();
@@ -430,6 +439,7 @@
             console.log('sender=', sender)
             console.log('wCheck=', wCheck)
 
+            //由于白名单绑定方法会被多个方法调用会多次触发事件,排除被其他方法调用而触发的事件
             if ($("#higherText").html() != higher) {
                 if (!wCheck) {
                     $("#higherText").html(":该账户未邀请你,或者联系66ccff@historyblock.org,事件ID:" + event.blockNumber);
@@ -477,8 +487,9 @@
 
 
         //每疫苗刷新一次投票结果
-        //setIntervalRun();
         getAllVoting();
+        setIntervalRun();
+
         getV(clientAccounts[0], "#getMyVotingMsg");
         getPeopleAsync();
 
