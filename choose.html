@@ -8,15 +8,20 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://metamask.github.io/test-dapp/index.css" type="text/css" />
+    <style type="text/css">
+    section {
+        margin: 1px 0 0px 0;
+    }
+    </style>
 </head>
 
 <body>
     <main class="container-fluid">
         <header>
             <div id="logo-container">
-                <h1 id="logo-text" class="text-center">
+                <h2 id="logo-text" class="text-center">
                     防疫政策意向投票-基于区块链-以太坊Goerli 测试网络
-                </h1>
+                </h2>
             </div>
         </header>
         <section>
@@ -108,6 +113,15 @@
                             <p class="info-text alert alert-success">
                                 地址对应投票结果: <span id="getVotingMsg"></span>
                             </p>
+                            <div class="form-group">
+                                <label>查询地址邀请的好友</label>
+                                <input class="form-control" type="text" id="otherPeopleAddr" placeholder="0x......" />
+                            </div>
+                            <button class="btn btn-primary btn-lg btn-block mb-3" id="otherPeople">
+                                查询地址邀请的好友
+                            </button>
+                            <div id="otherPeopleAddrList">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -165,6 +179,7 @@
             </div>
         </section>
     </main>
+    <div id="anchor" style="visibility:hidden">by mandaren</div>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
@@ -210,6 +225,41 @@
     var signerClient;
     const ownerAddress = "0x83872CE33905776EF9e159b892AC0Ad568bA388F"; //合约部署账户
 
+    function rollBottom() {
+
+        document.querySelector('#anchor').scrollIntoView(true);
+        document.querySelector('#anchor').scrollIntoView(true);
+    }
+
+
+    //查询对应地址邀请的好友
+    $("#otherPeople").click(
+        function() {
+            if (!isConnect()) {
+                return;
+            }
+            otherPeople();
+        })
+    async function otherPeople() {
+
+        const otherPeopleAddr = $("#otherPeopleAddr").val();
+        console.log("otherPeopleAddr:" + otherPeopleAddr);
+
+        if (otherPeopleAddr.length != 42) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '请先输入你要查询的账户地址!',
+            })
+            return;
+        }
+
+        getPeopleAsync(otherPeopleAddr, "#otherPeopleAddrList");
+
+        rollBottom();
+
+    }
+
 
     //投票
     $("._choose").click(
@@ -253,8 +303,8 @@
 
             tx = await contract.voting(chooseV, higherText)
             Swal.fire(
-                '投票成功',
                 '你的投票是：' + getVinfo(chooseV) + '!',
+                '投票成功',
                 'success'
             )
             $("#getMyVotingMsg").html(getVinfo(chooseV))
@@ -491,7 +541,7 @@
         setIntervalRun();
 
         getV(clientAccounts[0], "#getMyVotingMsg");
-        getPeopleAsync();
+        getPeopleAsync(clientAccounts[0], "#peopleAddr");
 
     }
     async function sleep(ms = 5000) {
@@ -600,17 +650,30 @@
     }
 
     //查询我邀请的好友
-    async function getPeopleAsync() {
+    async function getPeopleAsync(addr, viewId) {
 
-        const getPeople = await chooseContractClient.getPeople(clientAccounts[0]);
+        const getPeople = await chooseContractClient.getPeople(addr);
         console.log("getPeople:" + getPeople.length);
+
+
+
         var peopleText = "<label>邀请的好友地址</label>";
+
+        if (getPeople.length == 0) {
+
+            peopleText += '<p class="info-text alert alert-success">未邀请好友</span>  </p>';
+            console.log(peopleText);
+            $(viewId).html(peopleText);
+            return;
+
+        }
+
         for (i = 0; i < getPeople.length; i++) {
             peopleText += '<p class="info-text alert alert-success">  好友地址' + (i + 1) + ': <span>' + getPeople[i] + '</span>  </p>';
         }
 
         console.log(peopleText);
-        $("#peopleAddr").html(peopleText);
+        $(viewId).html(peopleText);
 
     }
     </script>
